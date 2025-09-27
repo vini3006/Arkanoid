@@ -8,10 +8,19 @@
 	CURSOR                           FFFC         CONSTANT
 	CURSOR_INIT                      FFFF         CONSTANT
 	FIM_TEXTO                        0040         CONSTANT
+	TIMER_UNIT                       FFF6         CONSTANT
+	ACTIVATE_TIME                    FFF7         CONSTANT
+	ON                               0001         CONSTANT
+	OFF                              0000         CONSTANT
 	LINHA_NAVE                       0015         CONSTANT
+	BOLA_CHAR                        006F         CONSTANT
 	EMPTY                            0020         CONSTANT
-	NAVE_CHAR                        005F         CONSTANT
-	NAVE_TAM                         0007         CONSTANT
+	NAVE_CHAR                        002D         CONSTANT
+	NAVE_TAM                         0009         CONSTANT
+	POS_PAREDEDIR                    004E         CONSTANT
+	POS_PAREDEESQ                    0001         CONSTANT
+	POS_TETO                         0003         CONSTANT
+	POS_CHAO                         0016         CONSTANT
 	linha0                           8000           STRING
 	linha1                           8051           STRING
 	linha2                           80A2           STRING
@@ -39,20 +48,37 @@
 	linha                            8798         VARIABLE
 	coluna                           8799         VARIABLE
 	nave_pos                         879A         VARIABLE
+	bola_linha                       879B         VARIABLE
+	bola_coluna                      879C         VARIABLE
+	direct_X                         879D         VARIABLE
+	direct_Y                         879E         VARIABLE
 	INT0                             FE00         VARIABLE
 	INT1                             FE01         VARIABLE
+	INT2                             FE02         VARIABLE
+	INT15                            FE0F         VARIABLE
 	Rotina                           0002            LABEL
-	MovDir                           0009            LABEL
-	terminadir                       0020            LABEL
-	MovEsq                           0024            LABEL
-	terminaesq                       003D            LABEL
-	printchar                        0041            LABEL
-	printf                           004E            LABEL
-	Ciclo                            0056            LABEL
-	endprintf                        0069            LABEL
-	printmapa                        0070            LABEL
-	Ciclo1                           007A            LABEL
-	Endciclo1                        0088            LABEL
-	Main                             008D            LABEL
-	Cycle                            009D            LABEL
-	Halt                             009E            LABEL
+	Timer                            0009            LABEL
+	MovDir                           0014            LABEL
+	terminadir                       002B            LABEL
+	MovEsq                           002F            LABEL
+	terminaesq                       0048            LABEL
+	MovBall                          004C            LABEL
+	comparaEsq                       0070            LABEL
+	comparaTeto                      0078            LABEL
+	comparaChao                      0080            LABEL
+	fimBola                          0088            LABEL
+	ColisaoNoTeto                    008F            LABEL
+	ColisaoNoChao                    0096            LABEL
+	ColisaoNaParedeDir               009D            LABEL
+	ColisaoNaParedeEsq               00A4            LABEL
+	printchar                        00AB            LABEL
+	printf                           00B8            LABEL
+	Ciclo                            00C0            LABEL
+	endprintf                        00D3            LABEL
+	printmapa                        00DA            LABEL
+	Ciclo1                           00E4            LABEL
+	Endciclo1                        00F2            LABEL
+	ConfigurarTimer                  00F7            LABEL
+	Main                             0102            LABEL
+	Cycle                            0114            LABEL
+	Halt                             0115            LABEL
