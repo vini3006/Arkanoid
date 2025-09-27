@@ -66,19 +66,20 @@
 	comparaEsq                       0070            LABEL
 	comparaTeto                      0078            LABEL
 	comparaChao                      0080            LABEL
-	fimBola                          0088            LABEL
-	ColisaoNoTeto                    008F            LABEL
-	ColisaoNoChao                    0096            LABEL
-	ColisaoNaParedeDir               009D            LABEL
-	ColisaoNaParedeEsq               00A4            LABEL
-	printchar                        00AB            LABEL
-	printf                           00B8            LABEL
-	Ciclo                            00C0            LABEL
-	endprintf                        00D3            LABEL
-	printmapa                        00DA            LABEL
-	Ciclo1                           00E4            LABEL
-	Endciclo1                        00F2            LABEL
-	ConfigurarTimer                  00F7            LABEL
-	Main                             0102            LABEL
-	Cycle                            0114            LABEL
-	Halt                             0115            LABEL
+	comparaNave                      0088            LABEL
+	fimBola                          009C            LABEL
+	ColisaoEmCima                    00A3            LABEL
+	ColisaoEmBaixo                   00AA            LABEL
+	ColisaoNaDir                     00B1            LABEL
+	ColisaoNaEsq                     00B8            LABEL
+	printchar                        00BF            LABEL
+	printf                           00CC            LABEL
+	Ciclo                            00D4            LABEL
+	endprintf                        00E7            LABEL
+	printmapa                        00EE            LABEL
+	Ciclo1                           00F8            LABEL
+	Endciclo1                        0106            LABEL
+	ConfigurarTimer                  010B            LABEL
+	Main                             0116            LABEL
+	Cycle                            0128            LABEL
+	Halt                             0129            LABEL

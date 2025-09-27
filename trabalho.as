@@ -183,22 +183,33 @@ MovBall: 		PUSH R1
 				MOV R6, POS_PAREDEDIR
 				CMP M[ bola_coluna ], R6
 				JMP.nz comparaEsq
-				CALL ColisaoNaParedeDir
+				CALL ColisaoNaDir
 
 comparaEsq:		MOV R6, POS_PAREDEESQ
 				CMP M[ bola_coluna ], R6
 				JMP.nz comparaTeto
-				CALL ColisaoNaParedeEsq
+				CALL ColisaoNaEsq
 
 comparaTeto:	MOV R6, POS_TETO
 				CMP M[ bola_linha ], R6
 				JMP.nz comparaChao
-				CALL ColisaoNoTeto
+				CALL ColisaoEmCima
 
 comparaChao:	MOV R6, POS_CHAO
 				CMP M[ bola_linha ], R6
+				JMP.nz comparaNave
+				CALL ColisaoEmBaixo
+
+comparaNave: 	MOV R6, 20d
+				CMP M[ bola_linha ], R6
 				JMP.nz fimBola
-				CALL ColisaoNoChao
+				MOV R6, M[nave_pos]
+				CMP M[ bola_coluna ], R6
+				JMP.n fimBola
+				SUB R6, M[ bola_coluna ]
+				CMP R6, NAVE_TAM
+				JMP.nn fimBola
+				CALL ColisaoEmBaixo
 
 fimBola:		POP R6
 				POP R5
@@ -209,10 +220,10 @@ fimBola:		POP R6
 				RET
 
 ;------------------------------------------------------------------------------
-; ColisaoNoTeto: troca a direção em Y
+; ColisaoEmCima: troca a direção em Y
 ;------------------------------------------------------------------------------
 
-ColisaoNoTeto:  PUSH R6
+ColisaoEmCima:  PUSH R6
 
 				MOV R6, 2
 				ADD M[ direct_Y ], R6
@@ -221,10 +232,10 @@ ColisaoNoTeto:  PUSH R6
 				RET
 
 ;------------------------------------------------------------------------------
-; ColisaoNoChao: troca a direção em Y 
+; ColisaoEmBaixo: troca a direção em Y 
 ;------------------------------------------------------------------------------
 
-ColisaoNoChao: 	PUSH R6
+ColisaoEmBaixo: 	PUSH R6
 
 				MOV R6, 2
 				SUB M[ direct_Y ], R6
@@ -233,9 +244,9 @@ ColisaoNoChao: 	PUSH R6
 				RET
 
 ;------------------------------------------------------------------------------
-; ColisaoNaParedeDir: troca a direção em X 
+; ColisaoNaDir: troca a direção em X 
 ;------------------------------------------------------------------------------
-ColisaoNaParedeDir:  PUSH R6
+ColisaoNaDir:  		PUSH R6
 
 					 MOV R6, 2
 					 SUB M[ direct_X ], R6
@@ -244,9 +255,9 @@ ColisaoNaParedeDir:  PUSH R6
 					 RET
 
 ;------------------------------------------------------------------------------
-; ColisaoNaParedeEsq: troca a direção em X 
+; ColisaoNaEsq: troca a direção em X 
 ;------------------------------------------------------------------------------
-ColisaoNaParedeEsq:  PUSH R6
+ColisaoNaEsq:  PUSH R6
 
 					 MOV R6, 2
 					 ADD M[ direct_X ], R6
