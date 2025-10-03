@@ -206,7 +206,8 @@ comparaNave: 	MOV R6, 20d
 				MOV R6, M[nave_pos]
 				CMP M[ bola_coluna ], R6
 				JMP.n fimBola
-				SUB R6, M[ bola_coluna ]
+				MOV R6, M[ bola_coluna ]
+				SUB R6, M[ nave_pos ]
 				CMP R6, NAVE_TAM
 				JMP.nn fimBola
 				CALL ColisaoEmBaixo

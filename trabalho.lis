@@ -67,19 +67,19 @@
 	comparaTeto                      0078            LABEL
 	comparaChao                      0080            LABEL
 	comparaNave                      0088            LABEL
-	fimBola                          009C            LABEL
-	ColisaoEmCima                    00A3            LABEL
-	ColisaoEmBaixo                   00AA            LABEL
-	ColisaoNaDir                     00B1            LABEL
-	ColisaoNaEsq                     00B8            LABEL
-	printchar                        00BF            LABEL
-	printf                           00CC            LABEL
-	Ciclo                            00D4            LABEL
-	endprintf                        00E7            LABEL
-	printmapa                        00EE            LABEL
-	Ciclo1                           00F8            LABEL
-	Endciclo1                        0106            LABEL
-	ConfigurarTimer                  010B            LABEL
-	Main                             0116            LABEL
-	Cycle                            0128            LABEL
-	Halt                             0129            LABEL
+	fimBola                          009E            LABEL
+	ColisaoEmCima                    00A5            LABEL
+	ColisaoEmBaixo                   00AC            LABEL
+	ColisaoNaDir                     00B3            LABEL
+	ColisaoNaEsq                     00BA            LABEL
+	printchar                        00C1            LABEL
+	printf                           00CE            LABEL
+	Ciclo                            00D6            LABEL
+	endprintf                        00E9            LABEL
+	printmapa                        00F0            LABEL
+	Ciclo1                           00FA            LABEL
+	Endciclo1                        0108            LABEL
+	ConfigurarTimer                  010D            LABEL
+	Main                             0118            LABEL
+	Cycle                            012A            LABEL
+	Halt                             012B            LABEL
