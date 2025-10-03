@@ -6,6 +6,7 @@ WRITE	        EQU     FFFEh
 INITIAL_SP      EQU     FDFFh
 CURSOR		    EQU     FFFCh
 CURSOR_INIT		EQU		FFFFh
+
 FIM_TEXTO       EQU     '@'
 TIMER_UNIT 		EQU 	FFF6h
 ACTIVATE_TIME 	EQU 	FFF7h
@@ -66,7 +67,6 @@ direct_Y 	   WORD		-1d
 				ORIG	FE00h
 INT0			WORD	MovDir
 INT1			WORD	MovEsq
-INT2 			WORD    MovBall
 				ORIG 	FE0Fh
 INT15 			WORD 	Timer				
 ;------------------------------------------------------------------------------
@@ -292,7 +292,7 @@ printchar:		PUSH 	R1
 ;		R3 = COLUNA
 ;		R4 = CARACTER ATUAL
 ;		R5 = CONTADOR
-;		R6 = SALVA A linha PRA NAO MATAR O AlinhaMENTO
+;		R6 = SALVA A linha PRA NAO MATAR O Alinhamento
 ;------------------------------------------------------------------------------
 
 printf:			PUSH R1
@@ -319,7 +319,7 @@ Ciclo:			MOV R6, R2
 				JMP Ciclo
 
 endprintf:		POP R6
-				POP R6
+				POP R5
 				POP R4
 				POP R3
 				POP R2
@@ -366,7 +366,7 @@ Endciclo1:      POP     R4
 
 ConfigurarTimer: PUSH R1
 
-				 MOV R1, 2d
+				 MOV R1, 1d
 				 MOV M[ TIMER_UNIT ], R1
 				 MOV R1, ON
 				 MOV M[ ACTIVATE_TIME ], R1
@@ -384,7 +384,7 @@ Main:			ENI
 				MOV		R2, M[ linha ]
 				MOV     R4, 0d
 
-				CALL  printmapa
+				CALL printmapa
 				CALL ConfigurarTimer
 
 

@@ -54,7 +54,6 @@
 	direct_Y                         879E         VARIABLE
 	INT0                             FE00         VARIABLE
 	INT1                             FE01         VARIABLE
-	INT2                             FE02         VARIABLE
 	INT15                            FE0F         VARIABLE
 	Rotina                           0002            LABEL
 	Timer                            0009            LABEL
