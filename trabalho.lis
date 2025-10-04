@@ -21,6 +21,12 @@
 	POS_PAREDEESQ                    0001         CONSTANT
 	POS_TETO                         0003         CONSTANT
 	POS_CHAO                         0016         CONSTANT
+	VIDA_LINHA                       0001         CONSTANT
+	VIDA_COLUNA                      004C         CONSTANT
+	MEIO_NAVE                        0004         CONSTANT
+	GAMEOVER                         0000         CONSTANT
+	CONTINUEGAME                     0001         CONSTANT
+	NUMERO_DE_VIDAS                  0003         CONSTANT
 	linha0                           8000           STRING
 	linha1                           8051           STRING
 	linha2                           80A2           STRING
@@ -45,40 +51,49 @@
 	linha21                          86A5           STRING
 	linha22                          86F6           STRING
 	linha23                          8747           STRING
-	linha                            8798         VARIABLE
-	coluna                           8799         VARIABLE
-	nave_pos                         879A         VARIABLE
-	bola_linha                       879B         VARIABLE
-	bola_coluna                      879C         VARIABLE
-	direct_X                         879D         VARIABLE
-	direct_Y                         879E         VARIABLE
+	linhagameover                    8798           STRING
+	linha                            87E9         VARIABLE
+	coluna                           87EA         VARIABLE
+	nave_pos                         87EB         VARIABLE
+	bola_linha                       87EC         VARIABLE
+	bola_coluna                      87ED         VARIABLE
+	direct_X                         87EE         VARIABLE
+	direct_Y                         87EF         VARIABLE
+	gamestate                        87F0         VARIABLE
+	lifenumber                       87F1         VARIABLE
 	INT0                             FE00         VARIABLE
 	INT1                             FE01         VARIABLE
 	INT15                            FE0F         VARIABLE
 	Rotina                           0002            LABEL
 	Timer                            0009            LABEL
-	MovDir                           0014            LABEL
-	terminadir                       002B            LABEL
-	MovEsq                           002F            LABEL
-	terminaesq                       0048            LABEL
-	MovBall                          004C            LABEL
-	comparaEsq                       0070            LABEL
-	comparaTeto                      0078            LABEL
-	comparaChao                      0080            LABEL
-	comparaNave                      0088            LABEL
-	fimBola                          009E            LABEL
-	ColisaoEmCima                    00A5            LABEL
-	ColisaoEmBaixo                   00AC            LABEL
-	ColisaoNaDir                     00B3            LABEL
-	ColisaoNaEsq                     00BA            LABEL
-	printchar                        00C1            LABEL
-	printf                           00CE            LABEL
-	Ciclo                            00D6            LABEL
-	endprintf                        00E9            LABEL
-	printmapa                        00F0            LABEL
-	Ciclo1                           00FA            LABEL
-	Endciclo1                        0108            LABEL
-	ConfigurarTimer                  010D            LABEL
-	Main                             0118            LABEL
-	Cycle                            012A            LABEL
-	Halt                             012B            LABEL
+	DeactiveTimer                    0016            LABEL
+	EndTimer                         001A            LABEL
+	MovDir                           001C            LABEL
+	terminadir                       0033            LABEL
+	MovEsq                           0037            LABEL
+	terminaesq                       0050            LABEL
+	MovBall                          0054            LABEL
+	comparaDir                       0070            LABEL
+	comparaEsq                       0078            LABEL
+	comparaTeto                      0080            LABEL
+	comparaChao                      0088            LABEL
+	comparaNave                      0090            LABEL
+	fimBola                          00A6            LABEL
+	ColisaoEmCima                    00AD            LABEL
+	ColisaoEmBaixo                   00B4            LABEL
+	ColisaoNaDir                     00BB            LABEL
+	ColisaoNaEsq                     00C2            LABEL
+	ReiniciaJogo                     00C9            LABEL
+	gameover                         00FA            LABEL
+	continue                         0106            LABEL
+	printchar                        010C            LABEL
+	printf                           0119            LABEL
+	Ciclo                            0121            LABEL
+	endprintf                        0134            LABEL
+	printmapa                        013B            LABEL
+	Ciclo1                           0145            LABEL
+	Endciclo1                        0153            LABEL
+	ConfigurarTimer                  0158            LABEL
+	Main                             0163            LABEL
+	Cycle                            0175            LABEL
+	Halt                             0176            LABEL

@@ -22,6 +22,12 @@ POS_PAREDEDIR 	EQU 	78d
 POS_PAREDEESQ 	EQU 	1d
 POS_TETO		EQU		3d
 POS_CHAO		EQU     22d
+VIDA_LINHA 		EQU 	1d
+VIDA_COLUNA 	EQU 	76d
+MEIO_NAVE 		EQU 	4d
+GAMEOVER		EQU 	0d
+CONTINUEGAME	EQU 	1d
+NUMERO_DE_VIDAS	EQU 	3d
 ;------------------------------------------------------------------------------
 ; ZONA II: definicao de variaveis
 ;          Pseudo-instrucoes : WORD - palavra (16 bits)
@@ -31,7 +37,7 @@ POS_CHAO		EQU     22d
 
         	   ORIG      8000h
 linha0         STR  	'#==============================================================================#', FIM_TEXTO
-linha1		   STR		'#     Score: 0                      ARKANOID                         Vidas: 3  #', FIM_TEXTO
+linha1		   STR		'#     Score:                        ARKANOID                         Vidas: 3  #', FIM_TEXTO
 linha2		   STR	 	'#==============================================================================#', FIM_TEXTO
 linha3         STR		'#                                                                              #', FIM_TEXTO	
 linha4         STR		'#                                                                              #', FIM_TEXTO	
@@ -54,6 +60,7 @@ linha20        STR		'#                                         o                
 linha21        STR		'#                                     ---------                                #', FIM_TEXTO
 linha22        STR		'#                                                                              #', FIM_TEXTO
 linha23        STR		'#==============================================================================#', FIM_TEXTO
+linhagameover  STR		'#                                     GAMEOVER                                 #', FIM_TEXTO	
 linha 		   WORD 	0d
 coluna         WORD     0d	
 nave_pos	   WORD		38d
@@ -61,6 +68,8 @@ bola_linha	   WORD		20d
 bola_coluna	   WORD		42d	 
 direct_X 	   WORD		1d
 direct_Y 	   WORD		-1d
+gamestate	   WORD 	CONTINUEGAME
+lifenumber	   WORD 	NUMERO_DE_VIDAS
 ;------------------------------------------------------------------------------
 ; ZONA III: definicao de tabela de interrupções
 ;------------------------------------------------------------------------------
@@ -86,16 +95,24 @@ Rotina:			PUSH R1
 				POP R1
 				RET
 
+
+
+
+
 Timer:   		PUSH R1
-				PUSH R2	
-				PUSH R3
-			
+
+				MOV  R1, M[ gamestate ]
+				CMP  R1, GAMEOVER
+				JMP.Z DeactiveTimer
+
 				CALL MovBall
 				CALL ConfigurarTimer
+				JMP EndTimer
 
-				POP R3
-				POP R2
-				POP R1
+DeactiveTimer:  MOV R1, OFF
+				MOV M[ ACTIVATE_TIME ], R1
+
+EndTimer:		POP R1
 				RTI
 
 ;------------------------------------------------------------------------------
@@ -180,7 +197,7 @@ MovBall: 		PUSH R1
 				MOV R1, BOLA_CHAR
 				CALL printchar
 
-				MOV R6, POS_PAREDEDIR
+comparaDir:		MOV R6, POS_PAREDEDIR
 				CMP M[ bola_coluna ], R6
 				JMP.nz comparaEsq
 				CALL ColisaoNaDir
@@ -198,7 +215,7 @@ comparaTeto:	MOV R6, POS_TETO
 comparaChao:	MOV R6, POS_CHAO
 				CMP M[ bola_linha ], R6
 				JMP.nz comparaNave
-				CALL ColisaoEmBaixo
+				CALL ReiniciaJogo
 
 comparaNave: 	MOV R6, 20d
 				CMP M[ bola_linha ], R6
@@ -265,6 +282,63 @@ ColisaoNaEsq:  PUSH R6
 
 					 POP R6
 					 RET
+
+;------------------------------------------------------------------------------
+; ReiniciaJogo: reiniciar o jogo
+;				R1: Bola
+;				R2: linha
+;				R3: coluna
+; 				R4: aux
+;------------------------------------------------------------------------------
+ReiniciaJogo:  	PUSH R1
+				PUSH R2
+				PUSH R3
+				PUSH R4
+				PUSH R5
+
+				MOV R1, EMPTY
+				MOV R2, M[ bola_linha ]
+				MOV R3, M[ bola_coluna ]
+				CALL printchar
+
+				MOV R2, 20d
+				MOV M[ bola_linha ], R2
+				MOV R3, M [ nave_pos ]
+				ADD R3, MEIO_NAVE
+				MOV M[ bola_coluna ], R3
+
+				MOV R1, BOLA_CHAR
+				CALL printchar
+
+				MOV R4, linha1
+				ADD R4, VIDA_COLUNA
+				DEC M[ lifenumber ]
+				MOV R5, M[ lifenumber ]
+				DEC M[ R4 ]
+				MOV R1, M[ R4 ]
+				MOV R2, VIDA_LINHA
+				MOV R3, VIDA_COLUNA
+				CALL printchar
+				CMP R5, GAMEOVER
+				JMP.z gameover
+				JMP continue
+
+gameover: 		MOV R5, GAMEOVER
+				MOV M[ gamestate ], R5
+				MOV R1, linhagameover
+				MOV R2, 12d
+				MOV R3, 0d
+				CALL printf
+
+continue:		POP R5
+				POP R4
+				POP R3
+				POP R2
+				POP R1
+
+				RET
+			
+				
 ;------------------------------------------------------------------------------
 ; printchar: imprime caracter
 ;		R1 = caracter
@@ -366,7 +440,7 @@ Endciclo1:      POP     R4
 
 ConfigurarTimer: PUSH R1
 
-				 MOV R1, 1d
+				 MOV R1, 2d
 				 MOV M[ TIMER_UNIT ], R1
 				 MOV R1, ON
 				 MOV M[ ACTIVATE_TIME ], R1
@@ -386,7 +460,7 @@ Main:			ENI
 
 				CALL printmapa
 				CALL ConfigurarTimer
-
+				
 
 Cycle: 			BR		Cycle	
 Halt:           BR		Halt
