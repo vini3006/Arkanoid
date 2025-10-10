@@ -41,11 +41,11 @@ linha1		   STR		'#     Score:                        ARKANOID                   
 linha2		   STR	 	'#==============================================================================#', FIM_TEXTO
 linha3         STR		'#                                                                              #', FIM_TEXTO	
 linha4         STR		'#                                                                              #', FIM_TEXTO	
-linha5         STR		'#                                                                              #', FIM_TEXTO	
+linha5         STR		'#       [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]        #', FIM_TEXTO	
 linha6         STR		'#                                                                              #', FIM_TEXTO	
-linha7         STR		'#                                                                              #', FIM_TEXTO	
+linha7         STR		'#       [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]        #', FIM_TEXTO	
 linha8         STR		'#                                                                              #', FIM_TEXTO	
-linha9         STR		'#                                                                              #', FIM_TEXTO	
+linha9         STR		'#       [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]        #', FIM_TEXTO	
 linha10        STR		'#                                                                              #', FIM_TEXTO	
 linha11        STR		'#                                                                              #', FIM_TEXTO	
 linha12        STR		'#                                                                              #', FIM_TEXTO	
@@ -61,6 +61,7 @@ linha21        STR		'#                                     ---------            
 linha22        STR		'#                                                                              #', FIM_TEXTO
 linha23        STR		'#==============================================================================#', FIM_TEXTO
 linhagameover  STR		'#                                     GAMEOVER                                 #', FIM_TEXTO	
+linhareset	   STR      '#                                 PRESS R TO RESET                             #', FIM_TEXTO	
 linha 		   WORD 	0d
 coluna         WORD     0d	
 nave_pos	   WORD		38d
@@ -76,6 +77,7 @@ lifenumber	   WORD 	NUMERO_DE_VIDAS
 				ORIG	FE00h
 INT0			WORD	MovDir
 INT1			WORD	MovEsq
+INT2 			WORD 	Reset
 				ORIG 	FE0Fh
 INT15 			WORD 	Timer				
 ;------------------------------------------------------------------------------
@@ -95,9 +97,9 @@ Rotina:			PUSH R1
 				POP R1
 				RET
 
-
-
-
+;------------------------------------------------------------------------------
+; Timer: interrupção do timer
+;------------------------------------------------------------------------------
 
 Timer:   		PUSH R1
 
@@ -275,13 +277,39 @@ ColisaoNaDir:  		PUSH R6
 ;------------------------------------------------------------------------------
 ; ColisaoNaEsq: troca a direção em X 
 ;------------------------------------------------------------------------------
-ColisaoNaEsq:  PUSH R6
+ColisaoNaEsq:  		PUSH R6
 
 					 MOV R6, 2
 					 ADD M[ direct_X ], R6
 
 					 POP R6
 					 RET
+
+;------------------------------------------------------------------------------
+; ColisaoComBloco: verifica a colisao com os blocos 
+;------------------------------------------------------------------------------
+
+ColisaoComBloco: 	PUSH R1
+					PUSH R2
+					PUSH R3
+
+					MOV R1, linha0 
+					MOV R2, M[ bola_linha ]
+					MUL R2, 81d
+					ADD R1, R2
+
+					CMP M[ direct_Y ], 1
+					JMP.z ColisaoPorBaixo
+					JMP ColisaoPorCima 
+ColisaoPorBaixo: 	
+
+ColisaoPorCima:		
+				
+
+					POP R3
+					POP R2
+					POP R1 
+					RET
 
 ;------------------------------------------------------------------------------
 ; ReiniciaJogo: reiniciar o jogo
@@ -328,6 +356,9 @@ gameover: 		MOV R5, GAMEOVER
 				MOV R1, linhagameover
 				MOV R2, 12d
 				MOV R3, 0d
+				CALL printf
+				MOV R1, linhareset
+				INC R2
 				CALL printf
 
 continue:		POP R5
@@ -381,7 +412,7 @@ Ciclo:			MOV R6, R2
 				ADD R1, R5
 				MOV R4, M[R1]
 				CMP R4, FIM_TEXTO		
-				JMP.z   endprintf						
+				JMP.z endprintf						
 				ADD R3, R5; COLUNA
 				SHL R6, 8
 				OR  R6, R3
@@ -433,7 +464,42 @@ Endciclo1:      POP     R4
 				POP		R2
 				POP		R1
 				RET
+;------------------------------------------------------------------------------
+; reset: reinicia o jogo após derrota 
+;------------------------------------------------------------------------------				
+Reset: 			PUSH R1
+				PUSH R2
+				PUSH R3
 
+				MOV R1, 20d 
+				MOV M[ bola_linha ], R1
+				MOV R1, 42d
+				MOV M[ bola_coluna ], R1
+				MOV R1, 38d
+				MOV M[ nave_pos ], R1 
+				MOV R1, NUMERO_DE_VIDAS
+				MOV M[ lifenumber ], R1
+				MOV R2, VIDA_LINHA	
+				MOV R3, VIDA_COLUNA
+				ADD M[ R3 ], R1
+				MOV R1, '3'
+				CALL printchar	
+				MOV R1, linha12
+				MOV R2, 12d
+				MOV R3, 0d 
+				CALL printf
+				MOV R1, linha13
+				INC R2
+				CALL printf
+
+				MOV R1, CONTINUEGAME
+				MOV M[ gamestate ], R1
+				CALL ConfigurarTimer
+
+				POP R3
+				POP R2
+				POP R1
+				RTI
 ;------------------------------------------------------------------------------
 ; ConfigurarTimer: configurar timer
 ;------------------------------------------------------------------------------
