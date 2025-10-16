@@ -52,17 +52,19 @@
 	linha22                          86F6           STRING
 	linha23                          8747           STRING
 	linhagameover                    8798           STRING
-	linha                            87E9         VARIABLE
-	coluna                           87EA         VARIABLE
-	nave_pos                         87EB         VARIABLE
-	bola_linha                       87EC         VARIABLE
-	bola_coluna                      87ED         VARIABLE
-	direct_X                         87EE         VARIABLE
-	direct_Y                         87EF         VARIABLE
-	gamestate                        87F0         VARIABLE
-	lifenumber                       87F1         VARIABLE
+	linhareset                       87E9           STRING
+	linha                            883A         VARIABLE
+	coluna                           883B         VARIABLE
+	nave_pos                         883C         VARIABLE
+	bola_linha                       883D         VARIABLE
+	bola_coluna                      883E         VARIABLE
+	direct_X                         883F         VARIABLE
+	direct_Y                         8840         VARIABLE
+	gamestate                        8841         VARIABLE
+	lifenumber                       8842         VARIABLE
 	INT0                             FE00         VARIABLE
 	INT1                             FE01         VARIABLE
+	INT2                             FE02         VARIABLE
 	INT15                            FE0F         VARIABLE
 	Rotina                           0002            LABEL
 	Timer                            0009            LABEL
@@ -85,15 +87,16 @@
 	ColisaoNaEsq                     00C2            LABEL
 	ReiniciaJogo                     00C9            LABEL
 	gameover                         00FA            LABEL
-	continue                         0106            LABEL
-	printchar                        010C            LABEL
-	printf                           0119            LABEL
-	Ciclo                            0121            LABEL
-	endprintf                        0134            LABEL
-	printmapa                        013B            LABEL
-	Ciclo1                           0145            LABEL
-	Endciclo1                        0153            LABEL
-	ConfigurarTimer                  0158            LABEL
-	Main                             0163            LABEL
-	Cycle                            0175            LABEL
-	Halt                             0176            LABEL
+	continue                         010B            LABEL
+	printchar                        0111            LABEL
+	printf                           011E            LABEL
+	Ciclo                            0126            LABEL
+	endprintf                        0139            LABEL
+	printmapa                        0140            LABEL
+	Ciclo1                           014A            LABEL
+	Endciclo1                        0158            LABEL
+	Reset                            015D            LABEL
+	ConfigurarTimer                  01A1            LABEL
+	Main                             01AC            LABEL
+	Cycle                            01BE            LABEL
+	Halt                             01BF            LABEL

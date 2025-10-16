@@ -285,31 +285,6 @@ ColisaoNaEsq:  		PUSH R6
 					 POP R6
 					 RET
 
-;------------------------------------------------------------------------------
-; ColisaoComBloco: verifica a colisao com os blocos 
-;------------------------------------------------------------------------------
-
-ColisaoComBloco: 	PUSH R1
-					PUSH R2
-					PUSH R3
-
-					MOV R1, linha0 
-					MOV R2, M[ bola_linha ]
-					MUL R2, 81d
-					ADD R1, R2
-
-					CMP M[ direct_Y ], 1
-					JMP.z ColisaoPorBaixo
-					JMP ColisaoPorCima 
-ColisaoPorBaixo: 	
-
-ColisaoPorCima:		
-				
-
-					POP R3
-					POP R2
-					POP R1 
-					RET
 
 ;------------------------------------------------------------------------------
 ; ReiniciaJogo: reiniciar o jogo
@@ -481,9 +456,12 @@ Reset: 			PUSH R1
 				MOV M[ lifenumber ], R1
 				MOV R2, VIDA_LINHA	
 				MOV R3, VIDA_COLUNA
-				ADD M[ R3 ], R1
 				MOV R1, '3'
 				CALL printchar	
+				MOV R2, 8000h 
+				ADD R2, 81d
+				ADD R2, R3
+				MOV M[R2], R1
 				MOV R1, linha12
 				MOV R2, 12d
 				MOV R3, 0d 
@@ -491,6 +469,12 @@ Reset: 			PUSH R1
 				MOV R1, linha13
 				INC R2
 				CALL printf
+				MOV R1, linha20
+				MOV R2, 20
+				CALL printf
+				MOV R1, linha21
+				MOV R2, 21
+				CALL printf				
 
 				MOV R1, CONTINUEGAME
 				MOV M[ gamestate ], R1
