@@ -12,6 +12,7 @@
 	ACTIVATE_TIME                    FFF7         CONSTANT
 	ON                               0001         CONSTANT
 	OFF                              0000         CONSTANT
+	TAM_LINHA                        0051         CONSTANT
 	LINHA_NAVE                       0015         CONSTANT
 	BOLA_CHAR                        006F         CONSTANT
 	EMPTY                            0020         CONSTANT
@@ -27,6 +28,19 @@
 	GAMEOVER                         0000         CONSTANT
 	CONTINUEGAME                     0001         CONSTANT
 	NUMERO_DE_VIDAS                  0003         CONSTANT
+	BLOCK_LEFT                       005B         CONSTANT
+	BLOCK_MIDDLE                     0058         CONSTANT
+	BLOCK_RIGHT                      005D         CONSTANT
+	BASE_ASCII                       0030         CONSTANT
+	CENTENA                          0064         CONSTANT
+	DEZENA                           000A         CONSTANT
+	SCOREINC                         000A         CONSTANT
+	SCORELINHA                       0001         CONSTANT
+	SCORECOLUNA                      000D         CONSTANT
+	LINHABLOCO1                      0005         CONSTANT
+	LINHABLOCO2                      0006         CONSTANT
+	LINHABLOCO3                      0009         CONSTANT
+	LINHABLOCO4                      000A         CONSTANT
 	linha0                           8000           STRING
 	linha1                           8051           STRING
 	linha2                           80A2           STRING
@@ -53,15 +67,22 @@
 	linha23                          8747           STRING
 	linhagameover                    8798           STRING
 	linhareset                       87E9           STRING
-	linha                            883A         VARIABLE
-	coluna                           883B         VARIABLE
-	nave_pos                         883C         VARIABLE
-	bola_linha                       883D         VARIABLE
-	bola_coluna                      883E         VARIABLE
-	direct_X                         883F         VARIABLE
-	direct_Y                         8840         VARIABLE
-	gamestate                        8841         VARIABLE
-	lifenumber                       8842         VARIABLE
+	linhaSaveBloco                   883A           STRING
+	linhaWin                         888B           STRING
+	linha                            88DC         VARIABLE
+	coluna                           88DD         VARIABLE
+	nave_pos                         88DE         VARIABLE
+	bola_linha                       88DF         VARIABLE
+	bola_coluna                      88E0         VARIABLE
+	direct_X                         88E1         VARIABLE
+	direct_Y                         88E2         VARIABLE
+	gamestate                        88E3         VARIABLE
+	lifenumber                       88E4         VARIABLE
+	ScoreTotal                       88E5         VARIABLE
+	ScoreCentena                     88E6         VARIABLE
+	ScoreDezena                      88E7         VARIABLE
+	ScoreUnidade                     88E8         VARIABLE
+	totalBlocks                      88E9         VARIABLE
 	INT0                             FE00         VARIABLE
 	INT1                             FE01         VARIABLE
 	INT2                             FE02         VARIABLE
@@ -76,27 +97,49 @@
 	terminaesq                       0050            LABEL
 	MovBall                          0054            LABEL
 	comparaDir                       0070            LABEL
-	comparaEsq                       0078            LABEL
-	comparaTeto                      0080            LABEL
-	comparaChao                      0088            LABEL
-	comparaNave                      0090            LABEL
-	fimBola                          00A6            LABEL
-	ColisaoEmCima                    00AD            LABEL
-	ColisaoEmBaixo                   00B4            LABEL
-	ColisaoNaDir                     00BB            LABEL
-	ColisaoNaEsq                     00C2            LABEL
-	ReiniciaJogo                     00C9            LABEL
-	gameover                         00FA            LABEL
-	continue                         010B            LABEL
-	printchar                        0111            LABEL
-	printf                           011E            LABEL
-	Ciclo                            0126            LABEL
-	endprintf                        0139            LABEL
-	printmapa                        0140            LABEL
-	Ciclo1                           014A            LABEL
-	Endciclo1                        0158            LABEL
-	Reset                            015D            LABEL
-	ConfigurarTimer                  01A1            LABEL
-	Main                             01AC            LABEL
-	Cycle                            01BE            LABEL
-	Halt                             01BF            LABEL
+	comparaEsq                       007A            LABEL
+	comparaTeto                      0084            LABEL
+	comparaChao                      008E            LABEL
+	comparaNave                      0098            LABEL
+	comparaBloco                     00AE            LABEL
+	fimBola                          00B0            LABEL
+	ColisaoBloco                     00B7            LABEL
+	comparaBlocoEmY                  00C0            LABEL
+	comparaBlocoEmYesq               00C7            LABEL
+	comparaBlocoEmYmid               00D2            LABEL
+	comparaBlocoEmYdir               00DC            LABEL
+	comparaBlocoEmX                  00E6            LABEL
+	comparaBlocoemXdir               00F3            LABEL
+	comparaBlocoemXesq               00FF            LABEL
+	comparaBlocoDiagonal             010A            LABEL
+	comparaBlocoDiagonalEsq          0118            LABEL
+	comparaBlocoDiagonalDir          0124            LABEL
+	EndBloco                         012F            LABEL
+	ApagaBloco                       0137            LABEL
+	ApagaBlocoEsq                    014B            LABEL
+	ApagaBlocoMid                    0160            LABEL
+	ApagaBlocoDir                    0164            LABEL
+	ConfereWin                       016A            LABEL
+	FimApagaBloco                    0172            LABEL
+	Win                              0177            LABEL
+	AtualizaScore                    0197            LABEL
+	InverteY                         01D6            LABEL
+	InverteX                         01D9            LABEL
+	ReiniciaJogo                     01DC            LABEL
+	gameover                         0211            LABEL
+	continue                         0222            LABEL
+	printchar                        0228            LABEL
+	printf                           0235            LABEL
+	Ciclo                            023D            LABEL
+	endprintf                        0250            LABEL
+	printmapa                        0257            LABEL
+	Ciclo1                           0261            LABEL
+	Endciclo1                        026F            LABEL
+	Reset                            0274            LABEL
+	ResetBlocos                      02E6            LABEL
+	LoopBlocos                       02EC            LABEL
+	EndResetBlocos                   0300            LABEL
+	ConfigurarTimer                  0305            LABEL
+	Main                             0310            LABEL
+	Cycle                            0322            LABEL
+	Halt                             0323            LABEL

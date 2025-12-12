@@ -13,6 +13,7 @@ ACTIVATE_TIME 	EQU 	FFF7h
 ON 				EQU		1d
 OFF 			EQU 	0d
 
+TAM_LINHA 		EQU 	81d
 LINHA_NAVE 		EQU 	21d
 BOLA_CHAR		EQU 	'o'
 EMPTY           EQU 	' '
@@ -28,6 +29,19 @@ MEIO_NAVE 		EQU 	4d
 GAMEOVER		EQU 	0d
 CONTINUEGAME	EQU 	1d
 NUMERO_DE_VIDAS	EQU 	3d
+BLOCK_LEFT 		EQU 	'['
+BLOCK_MIDDLE	EQU 	'X'
+BLOCK_RIGHT 	EQU		']'
+BASE_ASCII      EQU     48d
+CENTENA         EQU     100d
+DEZENA          EQU     10d
+SCOREINC        EQU     10d
+SCORELINHA      EQU     1d
+SCORECOLUNA     EQU     13d
+LINHABLOCO1		EQU 	5d
+LINHABLOCO2		EQU 	6d
+LINHABLOCO3		EQU 	9d
+LINHABLOCO4		EQU 	10d
 ;------------------------------------------------------------------------------
 ; ZONA II: definicao de variaveis
 ;          Pseudo-instrucoes : WORD - palavra (16 bits)
@@ -37,16 +51,16 @@ NUMERO_DE_VIDAS	EQU 	3d
 
         	   ORIG      8000h
 linha0         STR  	'#==============================================================================#', FIM_TEXTO
-linha1		   STR		'#     Score:                        ARKANOID                         Vidas: 3  #', FIM_TEXTO
+linha1		   STR		'#     Score: 000                    ARKANOID                         Vidas: 3  #', FIM_TEXTO
 linha2		   STR	 	'#==============================================================================#', FIM_TEXTO
 linha3         STR		'#                                                                              #', FIM_TEXTO	
 linha4         STR		'#                                                                              #', FIM_TEXTO	
-linha5         STR		'#       [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]        #', FIM_TEXTO	
-linha6         STR		'#                                                                              #', FIM_TEXTO	
-linha7         STR		'#       [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]        #', FIM_TEXTO	
+linha5         STR		'#            [X][X][X]   [X][X][X]  [X][X][X]  [X][X][X]  [X][X][X]            #', FIM_TEXTO	
+linha6         STR		'#            [X][X][X]   [X][X][X]  [X][X][X]  [X][X][X]  [X][X][X]            #', FIM_TEXTO	
+linha7         STR		'#                                                                              #', FIM_TEXTO	
 linha8         STR		'#                                                                              #', FIM_TEXTO	
-linha9         STR		'#       [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]  [X]        #', FIM_TEXTO	
-linha10        STR		'#                                                                              #', FIM_TEXTO	
+linha9         STR		'#            [X][X][X]   [X][X][X]  [X][X][X]  [X][X][X]  [X][X][X]            #', FIM_TEXTO	
+linha10        STR		'#            [X][X][X]   [X][X][X]  [X][X][X]  [X][X][X]  [X][X][X]            #', FIM_TEXTO	
 linha11        STR		'#                                                                              #', FIM_TEXTO	
 linha12        STR		'#                                                                              #', FIM_TEXTO	
 linha13        STR		'#                                                                              #', FIM_TEXTO	
@@ -62,6 +76,8 @@ linha22        STR		'#                                                          
 linha23        STR		'#==============================================================================#', FIM_TEXTO
 linhagameover  STR		'#                                     GAMEOVER                                 #', FIM_TEXTO	
 linhareset	   STR      '#                                 PRESS R TO RESET                             #', FIM_TEXTO	
+linhaSaveBloco STR      '#            [X][X][X]   [X][X][X]  [X][X][X]  [X][X][X]  [X][X][X]            #', FIM_TEXTO
+linhaWin 	   STR      '#                              CONGRATULATIONS! YOU WON!                       #', FIM_TEXTO
 linha 		   WORD 	0d
 coluna         WORD     0d	
 nave_pos	   WORD		38d
@@ -71,6 +87,11 @@ direct_X 	   WORD		1d
 direct_Y 	   WORD		-1d
 gamestate	   WORD 	CONTINUEGAME
 lifenumber	   WORD 	NUMERO_DE_VIDAS
+ScoreTotal     WORD     0d
+ScoreCentena   WORD     0d
+ScoreDezena    WORD     0d
+ScoreUnidade   WORD     0d 	
+totalBlocks    WORD	    60d
 ;------------------------------------------------------------------------------
 ; ZONA III: definicao de tabela de interrupções
 ;------------------------------------------------------------------------------
@@ -186,10 +207,10 @@ MovBall: 		PUSH R1
 
 				MOV R4, M[ direct_X ]
 				MOV R5, M[ direct_Y ]
-
-				MOV R1, EMPTY
 				MOV R2, M[ bola_linha ]
 				MOV R3, M[ bola_coluna ]
+
+				MOV R1, EMPTY
 				CALL printchar
 
 				ADD R2, R5
@@ -202,34 +223,40 @@ MovBall: 		PUSH R1
 comparaDir:		MOV R6, POS_PAREDEDIR
 				CMP M[ bola_coluna ], R6
 				JMP.nz comparaEsq
-				CALL ColisaoNaDir
+				CALL InverteX
+				JMP fimBola
 
 comparaEsq:		MOV R6, POS_PAREDEESQ
 				CMP M[ bola_coluna ], R6
 				JMP.nz comparaTeto
-				CALL ColisaoNaEsq
+				CALL InverteX
+				JMP fimBola
 
 comparaTeto:	MOV R6, POS_TETO
 				CMP M[ bola_linha ], R6
 				JMP.nz comparaChao
-				CALL ColisaoEmCima
+				CALL InverteY
+				JMP fimBola
 
 comparaChao:	MOV R6, POS_CHAO
 				CMP M[ bola_linha ], R6
 				JMP.nz comparaNave
 				CALL ReiniciaJogo
+				JMP fimBola
 
 comparaNave: 	MOV R6, 20d
 				CMP M[ bola_linha ], R6
-				JMP.nz fimBola
+				JMP.nz comparaBloco
 				MOV R6, M[nave_pos]
 				CMP M[ bola_coluna ], R6
-				JMP.n fimBola
+				JMP.n comparaBloco
 				MOV R6, M[ bola_coluna ]
 				SUB R6, M[ nave_pos ]
 				CMP R6, NAVE_TAM
-				JMP.nn fimBola
-				CALL ColisaoEmBaixo
+				JMP.nn comparaBloco
+				CALL InverteY
+
+comparaBloco:   CALL ColisaoBloco			
 
 fimBola:		POP R6
 				POP R5
@@ -238,53 +265,252 @@ fimBola:		POP R6
 				POP R2
 				POP R1
 				RET
-
 ;------------------------------------------------------------------------------
-; ColisaoEmCima: troca a direção em Y
+; ColisaoBloco: confere colisoes com o bloco
 ;------------------------------------------------------------------------------
+ColisaoBloco:	PUSH R1
+				PUSH R2 ; linha
+				PUSH R3 ; coluna
+				PUSH R4	; direção X (coluna)
+				PUSH R5 ; direção Y (linha)
+				PUSH R6
+				PUSH R7
 
-ColisaoEmCima:  PUSH R6
+				MOV R1, linha0
 
-				MOV R6, 2
-				ADD M[ direct_Y ], R6
+comparaBlocoEmY: 	ADD R2, R5
+					MOV R6, TAM_LINHA ; multiplicador pra acessar a linha
+					MOV R7, R2 ; move a linha para R7 para guardar o valor de R2
+					MUL R6, R7 ; guarda em R7
+					ADD R7, R3 ; adiciono a coluna 
+					ADD R1, R7 ; acesso o endereço certo da proxima posição acima ou abaixo do bloco
 
+comparaBlocoEmYesq: MOV R6, M[R1] ; pego o conteudo do proximo end acima ou abaixo
+					CMP R6, BLOCK_LEFT
+					JMP.nz comparaBlocoEmYmid
+					CALL InverteY
+					CALL ApagaBloco
+                    JMP EndBloco
+
+comparaBlocoEmYmid: CMP R6, BLOCK_MIDDLE
+					JMP.nz comparaBlocoEmYdir
+					CALL InverteY
+					CALL ApagaBloco
+                    JMP EndBloco
+
+comparaBlocoEmYdir: CMP R6, BLOCK_RIGHT
+					JMP.nz comparaBlocoEmX
+					CALL InverteY
+					CALL ApagaBloco
+                    JMP EndBloco
+
+comparaBlocoEmX: 	MOV R1, linha0 
+                    MOV R2, M[ bola_linha ]
+                    MOV R3, M[ bola_coluna ]
+                    
+                    MOV R6, TAM_LINHA ; multiplicador para acessar a linha 
+                    MOV R7, R2 ; move a linha para R7 para guardar R2
+                    MUL R6, R7 ; guarda em R7
+                    ADD R7, R3 ; adiciona a coluna
+                    ADD R7, R4 ; adiciona a direção em Y
+                    ADD R1, R7 ; acesso endereço do bloco à lateral da bola
+
+comparaBlocoemXdir: MOV R6, M[R1]
+                    CMP R6, BLOCK_LEFT
+                    JMP.nz comparaBlocoemXesq
+                    CALL InverteX
+                    INC R3
+                    CALL ApagaBloco
+                    JMP EndBloco
+
+comparaBlocoemXesq: CMP R6, BLOCK_RIGHT
+                    JMP.nz comparaBlocoDiagonal
+                    CALL InverteX
+                    DEC R3
+                    CALL ApagaBloco
+                    JMP EndBloco
+
+comparaBlocoDiagonal: MOV R1, linha0
+                      MOV R2, M[ bola_linha ]
+                      MOV R3, M[ bola_coluna ]
+
+                      ADD R2, R5 ; indice da proxima linha (Y)
+                      MOV R6, TAM_LINHA 
+                      MOV R7, R2
+                      MUL R6, R7
+                      ADD R7, R3
+                      ADD R7, R4
+                      ADD R1, R7
+
+comparaBlocoDiagonalEsq: MOV R6, M[R1]
+						 CMP R6, BLOCK_RIGHT
+                         JMP.nz comparaBlocoDiagonalDir
+                         CALL InverteX
+                         CALL InverteY
+                         DEC R3
+                         CALL ApagaBloco
+
+comparaBlocoDiagonalDir: CMP R6, BLOCK_LEFT
+						 JMP.nz EndBloco
+						 CALL InverteX
+						 CALL InverteY
+						 INC R3 
+						 CALL ApagaBloco
+
+EndBloco:		POP R7
 				POP R6
+				POP R5
+				POP R4
+				POP R3
+				POP R2
+				POP R1
+				RET 
+
+;------------------------------------------------------------------------------
+; ApagaBloco: apaga o bloco após a colisão
+;------------------------------------------------------------------------------
+ApagaBloco:     PUSH R1
+                PUSH R2
+                PUSH R3
+                PUSH R4
+
+				CALL AtualizaScore
+
+                CMP R6, BLOCK_LEFT
+                JMP.z ApagaBlocoEsq
+                CMP R6, BLOCK_MIDDLE
+                JMP.z ApagaBlocoMid
+                CMP R6, BLOCK_RIGHT
+                JMP.z ApagaBlocoDir
+                JMP FimApagaBloco
+
+ApagaBlocoEsq:  MOV R4, EMPTY
+                MOV M[R1], R4
+                INC R1
+                MOV M[R1], R4
+                INC R1
+                MOV M[ R1 ], R4
+                MOV R1, EMPTY
+                CALL printchar
+                INC R3
+                CALL printchar
+                INC R3
+                CALL printchar
+				DEC M[totalBlocks]
+                JMP ConfereWin
+
+ApagaBlocoMid:  DEC R1
+                DEC R3
+                JMP ApagaBlocoEsq
+
+ApagaBlocoDir:  SUB R1, 2
+                SUB R3, 2
+                JMP ApagaBlocoEsq
+
+ConfereWin: 	MOV R4, M[totalBlocks]
+				CMP R4, 0d
+				JMP.nz FimApagaBloco
+				CALL Win
+
+FimApagaBloco:  POP R4
+                POP R3
+                POP R2
+                POP R1
+
+                RET
+
+;------------------------------------------------------------------------------
+; Win: Mostra que o jogador venceu
+;------------------------------------------------------------------------------
+Win: 			PUSH R1
+				PUSH R2
+				PUSH R3
+
+				MOV R1, GAMEOVER
+				MOV M[ gamestate ], R1
+
+				MOV R1, linhaWin
+				MOV R2, 12d
+				MOV R3, 0d
+				CALL printf
+				MOV R1, linhareset
+				INC R2
+				CALL printf
+
+				MOV R1, EMPTY
+				MOV R2, M[bola_linha]
+				MOV R3, M[bola_coluna]
+				CALL printchar
+
+				POP R3
+				POP R2
+				POP R1
+
+				RET
+;------------------------------------------------------------------------------
+; AtualizaScore: atualiza a pontuação
+;------------------------------------------------------------------------------
+AtualizaScore:  PUSH R1
+                PUSH R2
+                PUSH R3
+                PUSH R4
+
+                MOV R1, SCOREINC ; R1 = 10 (incremento do score)
+                ADD M[ScoreTotal], R1 ; Adiciono o incremento no total de pontos
+
+                MOV R1, M[ScoreTotal] ; R1 = pontuação, 123
+                MOV R2, CENTENA;
+                DIV R1, R2; R1 = RESULTADO, 1   R2 = RESTO, 23
+                MOV M[ScoreCentena], R1 ; 1
+
+                MOV R1, DEZENA
+                DIV R2, R1; R2 = RESULADO, 2 , R1 = RESTO, 3
+                MOV M[ScoreDezena], R2 ; 2
+
+                MOV M[ScoreUnidade], R1 ; 3
+
+                MOV R1, M[ScoreCentena]
+                MOV R2, BASE_ASCII
+                ADD R1, R2
+                MOV R2, SCORELINHA
+                MOV R3, SCORECOLUNA
+                CALL printchar
+
+                MOV R1, M[ScoreDezena]
+                MOV R2, BASE_ASCII
+                ADD R1, R2
+				MOV R2, SCORELINHA
+                MOV R3, SCORECOLUNA
+                INC R3
+                CALL printchar
+
+                MOV R1, M[ScoreUnidade]
+                MOV R2, BASE_ASCII
+                ADD R1, R2
+				MOV R2, SCORELINHA
+                MOV R3, SCORECOLUNA
+                INC R3
+				INC R3
+                CALL printchar
+
+                POP R4
+                POP R3
+                POP R2
+                POP R1
+
+                RET         
+;------------------------------------------------------------------------------
+; InverteY: troca a direção em Y
+;------------------------------------------------------------------------------
+
+InverteY:  		NEG M[ direct_Y ]
 				RET
 
 ;------------------------------------------------------------------------------
-; ColisaoEmBaixo: troca a direção em Y 
+; InverteX: troca a direção em X 
 ;------------------------------------------------------------------------------
-
-ColisaoEmBaixo: 	PUSH R6
-
-				MOV R6, 2
-				SUB M[ direct_Y ], R6
-
-				POP R6
-				RET
-
-;------------------------------------------------------------------------------
-; ColisaoNaDir: troca a direção em X 
-;------------------------------------------------------------------------------
-ColisaoNaDir:  		PUSH R6
-
-					 MOV R6, 2
-					 SUB M[ direct_X ], R6
-
-					 POP R6
-					 RET
-
-;------------------------------------------------------------------------------
-; ColisaoNaEsq: troca a direção em X 
-;------------------------------------------------------------------------------
-ColisaoNaEsq:  		PUSH R6
-
-					 MOV R6, 2
-					 ADD M[ direct_X ], R6
-
-					 POP R6
-					 RET
-
+InverteX:  	NEG M[ direct_X ]	
+			RET
 
 ;------------------------------------------------------------------------------
 ; ReiniciaJogo: reiniciar o jogo
@@ -298,6 +524,9 @@ ReiniciaJogo:  	PUSH R1
 				PUSH R3
 				PUSH R4
 				PUSH R5
+
+                MOV R1, -1d 
+                MOV M[ direct_Y ], R1
 
 				MOV R1, EMPTY
 				MOV R2, M[ bola_linha ]
@@ -343,8 +572,7 @@ continue:		POP R5
 				POP R1
 
 				RET
-			
-				
+		
 ;------------------------------------------------------------------------------
 ; printchar: imprime caracter
 ;		R1 = caracter
@@ -429,7 +657,7 @@ Ciclo1:			CMP     R4, 24d
 				MOV		R3, M[ coluna ]
 				CALL	printf
 
-				ADD     R1, 81d
+				ADD     R1, TAM_LINHA
 				INC     R2
 				INC		R4
 				JMP     Ciclo1 
@@ -448,33 +676,70 @@ Reset: 			PUSH R1
 
 				MOV R1, 20d 
 				MOV M[ bola_linha ], R1
+
 				MOV R1, 42d
 				MOV M[ bola_coluna ], R1
+
 				MOV R1, 38d
 				MOV M[ nave_pos ], R1 
+
 				MOV R1, NUMERO_DE_VIDAS
 				MOV M[ lifenumber ], R1
+
 				MOV R2, VIDA_LINHA	
 				MOV R3, VIDA_COLUNA
 				MOV R1, '3'
 				CALL printchar	
-				MOV R2, 8000h 
-				ADD R2, 81d
+
+				MOV R2, linha0 
+				ADD R2, TAM_LINHA
 				ADD R2, R3
 				MOV M[R2], R1
 				MOV R1, linha12
 				MOV R2, 12d
 				MOV R3, 0d 
 				CALL printf
+
 				MOV R1, linha13
 				INC R2
 				CALL printf
+
 				MOV R1, linha20
+
 				MOV R2, 20
 				CALL printf
+
 				MOV R1, linha21
 				MOV R2, 21
-				CALL printf				
+				CALL printf	
+
+				MOV R1, 0d
+				MOV M[ScoreTotal], R1
+
+				ADD R1, BASE_ASCII
+
+				MOV R2, SCORELINHA
+				MOV R3, SCORECOLUNA
+				CALL printchar
+				INC R3
+				CALL printchar
+				INC R3
+				CALL printchar	
+
+				MOV R1, linhaSaveBloco
+				MOV R2, LINHABLOCO1
+				CALL ResetBlocos
+				MOV R3, 0d
+				CALL printf
+				MOV R2, LINHABLOCO2
+				CALL ResetBlocos
+				CALL printf
+				MOV R2, LINHABLOCO3
+				CALL ResetBlocos
+				CALL printf
+				MOV R2, LINHABLOCO4
+				CALL ResetBlocos
+				CALL printf
 
 				MOV R1, CONTINUEGAME
 				MOV M[ gamestate ], R1
@@ -485,12 +750,51 @@ Reset: 			PUSH R1
 				POP R1
 				RTI
 ;------------------------------------------------------------------------------
+; ResetBlocos: coloca os blocos de volta na memoria
+; 			   R1 = Linha que vai ser colocada de volta	 
+; 			   R2 = Linha em que vai ser feita a reposição na memória
+; 			   R3 = Contador/iterador sobre as colunas
+; 			   R4 = Salva o contexto de R2
+;			   R5 = auxiliar
+;------------------------------------------------------------------------------
+ResetBlocos:	PUSH R1
+            	PUSH R2
+           		PUSH R3
+            	PUSH R4
+
+				MOV R3, 0
+LoopBlocos:		CMP R3, TAM_LINHA
+            	JMP.z EndResetBlocos
+
+				MOV R1, TAM_LINHA
+				MOV R4, R2 ; Salva o contexto do 2 (nao pode ser alterado ao longo da execução)
+				MUL R1, R4 ; Guarda a quantidade a ser adicionada à linha 0
+				MOV R1, linha0
+				ADD R4, R1 ; Guarda o resultado da soma em R4
+				
+				MOV R1, linhaSaveBloco 
+				ADD R4, R3
+				ADD R1, R3
+
+				MOV R5, M[R1]
+				MOV M[R4], R5
+
+				INC R3
+				JMP LoopBlocos
+
+EndResetBlocos: POP R4
+            	POP R3
+            	POP R2
+            	POP R1
+            	RET
+
+;------------------------------------------------------------------------------
 ; ConfigurarTimer: configurar timer
 ;------------------------------------------------------------------------------
 
 ConfigurarTimer: PUSH R1
 
-				 MOV R1, 2d
+				 MOV R1, 2d 
 				 MOV M[ TIMER_UNIT ], R1
 				 MOV R1, ON
 				 MOV M[ ACTIVATE_TIME ], R1
