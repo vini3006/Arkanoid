@@ -674,6 +674,10 @@ Reset: 			PUSH R1
 				PUSH R2
 				PUSH R3
 
+				MOV R1, M[ gamestate ]
+				CMP R1, 1
+				JMP.z FimReset 
+
 				MOV R1, 20d 
 				MOV M[ bola_linha ], R1
 
@@ -745,7 +749,7 @@ Reset: 			PUSH R1
 				MOV M[ gamestate ], R1
 				CALL ConfigurarTimer
 
-				POP R3
+FimReset: 		POP R3
 				POP R2
 				POP R1
 				RTI

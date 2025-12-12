@@ -136,10 +136,11 @@
 	Ciclo1                           0261            LABEL
 	Endciclo1                        026F            LABEL
 	Reset                            0274            LABEL
-	ResetBlocos                      02E6            LABEL
-	LoopBlocos                       02EC            LABEL
-	EndResetBlocos                   0300            LABEL
-	ConfigurarTimer                  0305            LABEL
-	Main                             0310            LABEL
-	Cycle                            0322            LABEL
-	Halt                             0323            LABEL
+	FimReset                         02E8            LABEL
+	ResetBlocos                      02EC            LABEL
+	LoopBlocos                       02F2            LABEL
+	EndResetBlocos                   0306            LABEL
+	ConfigurarTimer                  030B            LABEL
+	Main                             0316            LABEL
+	Cycle                            0328            LABEL
+	Halt                             0329            LABEL
