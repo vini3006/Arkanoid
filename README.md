@@ -6,14 +6,11 @@ Implementação do jogo Arkanoid (breakout) em Assembly do processador didático
 ![Plataforma](https://img.shields.io/badge/plataforma-Linux-lightgrey)
 ![Simulador](https://img.shields.io/badge/simulador-P3%20Simulator%20(Java)-orange)
 
-<!-- TODO: adicionar screenshot/gif aqui.
-     Capturar: (1) a tela principal do simulador P3 com o mapa desenhado —
-     cabeçalho com Score/Vidas, as 4 fileiras de blocos [X], a nave "---------"
-     e a bola "o"; (2) um gif curto de ~5s mostrando a bola rebatendo nas
-     paredes e destruindo blocos (score subindo), e a nave se movendo pelos
-     botões de interrupção INT0/INT1 do simulador. -->
+<!-- TODO (opcional): trocar por um gif curto de ~5s mostrando a bola
+     rebatendo e destruindo blocos, com a nave se movendo pelos botões
+     de interrupção INT0/INT1 do simulador. -->
 
-![Placeholder da tela do jogo](docs/screenshot.png)
+![Arkanoid rodando no simulador P3: cabeçalho com Score e Vidas, fileiras de blocos, nave e bola em modo texto](docs/screenshot.png)
 
 ## Sobre o projeto
 
